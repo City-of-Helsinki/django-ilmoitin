@@ -1,7 +1,9 @@
 branches: {only: [master]}
+dist: xenial
 sudo: false
 language: python
-python: "3.6"
+python:
+  - 3.6 
 cache: pip
 
 addons:
@@ -18,7 +20,8 @@ matrix:
       install: pip install -r requirements-test.txt
       before_script:
         - createdb django_ilmoitin
-      script: pytest -ra -vv --doctest-modules --cov=.
+        - pip install -e .
+      script: pytest -ra -vv --doctest-modules --cov django_ilmoitin
       after_success: pip install codecov && codecov
 
     - name: Coding style
