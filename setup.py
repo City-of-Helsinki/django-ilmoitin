@@ -18,6 +18,7 @@ setup(
     license="MIT License",
     description="Django app for sending notifications.",
     long_description=README,
+    long_description_content_type="text/markdown",
     url="https://github.com/City-of-Helsinki/django-ilmoitin",
     author="City of Helsinki",
     author_email="dev@hel.fi",
