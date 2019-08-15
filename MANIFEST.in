@@ -1,1 +1,2 @@
 recursive-include django_ilmoitin/static *
+recursive-include django_ilmoitin/templates *
