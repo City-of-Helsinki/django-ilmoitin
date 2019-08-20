@@ -39,13 +39,15 @@ def test_notification_template_rendering(notification_template):
         "body_text_var": "text_baz",
     }
 
-    rendered = render_notification_template("event_created", context, "en")
+    template = NotificationTemplate.objects.filter(_type="event_created").first()
+
+    rendered = render_notification_template(template, context, "en")
     assert len(rendered) == 3
     assert rendered.subject == "test subject, variable value: bar!"
     assert rendered.body_html == "<b>test body HTML</b>, variable value: html_baz!"
     assert rendered.body_text == "test body text, variable value: text_baz!"
 
-    rendered = render_notification_template("event_created", context, "fi")
+    rendered = render_notification_template(template, context, "fi")
     assert len(rendered) == 3
     assert rendered.subject == "testiotsikko, muuttujan arvo: bar!"
     assert rendered.body_html == "<b>testihötömölöruumis</b>, muuttujan arvo: html_baz!"
@@ -67,13 +69,15 @@ def test_notification_template_rendering_no_body_text_provided(notification_temp
     notification_template.body_text = ""
     notification_template.save()
 
-    rendered = render_notification_template("event_created", context, "en")
+    template = NotificationTemplate.objects.filter(_type="event_created").first()
+
+    rendered = render_notification_template(template, context, "en")
     assert len(rendered) == 3
     assert rendered.subject == "test subject, variable value: bar!"
     assert rendered.body_html == "<b>test body HTML</b>, variable value: html_baz!"
     assert rendered.body_text == "test body HTML, variable value: html_baz!"
 
-    rendered = render_notification_template("event_created", context, "fi")
+    rendered = render_notification_template(template, context, "fi")
     assert len(rendered) == 3
     assert rendered.subject == "testiotsikko, muuttujan arvo: bar!"
     assert rendered.body_html == "<b>testihötömölöruumis</b>, muuttujan arvo: html_baz!"
@@ -84,8 +88,10 @@ def test_notification_template_rendering_no_body_text_provided(notification_temp
 def test_undefined_rendering_context_variable(notification_template):
     context = {"extra_var": "foo", "subject_var": "bar", "body_text_var": "baz"}
 
+    template = NotificationTemplate.objects.filter(_type="event_created").first()
+
     with pytest.raises(NotificationTemplateException) as e:
-        render_notification_template("event_created", context, "fi")
+        render_notification_template(template, context, "fi")
     assert "'body_html_var' is undefined" in str(e)
 
 

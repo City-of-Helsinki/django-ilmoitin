@@ -30,9 +30,19 @@ def send_notification(
     if context is None:
         context = {}
 
+    template = NotificationTemplate.objects.filter(_type=notification_type).first()
+
+    if not template:
+        logger.warning(
+            'No notification template created for "{}" event, not sending anything.'.format(
+                notification_type
+            )
+        )
+        return
+
     try:
         subject, body_html, body_text = render_notification_template(
-            notification_type, context, language
+            template, context, language
         )
     except NotificationTemplate.DoesNotExist:
         logger.debug(
@@ -53,22 +63,34 @@ def send_notification(
         )
         return
 
-    send_mail(subject, body_html, body_text, email)
+    send_mail(
+        subject, body_text, email, from_email=template.from_email, body_html=body_html
+    )
+
+    if (
+        template.admins_to_notify.exists()
+        and template.admin_notification_subject
+        and template.admin_notification_text
+    ):
+        admin_subject = template.admin_notification_subject
+        admin_text = template.admin_notification_text
+
+        for admin in template.admins_to_notify.all():
+            send_mail(
+                admin_subject, admin_text, admin.email, from_email=template.from_email
+            )
 
     # also immediately fire django-mailer's commands
     Message.objects.retry_deferred()
     send_all()
 
 
-def render_notification_template(
-    notification_type, context, language_code=DEFAULT_LANGUAGE
-):
+def render_notification_template(template, context, language_code=DEFAULT_LANGUAGE):
     """
     Render a notification template with given context in given language
 
     Returns a namedtuple containing all content fields (subject, body_html, body_text) of the template.
     """
-    template = NotificationTemplate.objects.get(_type=notification_type)
     env = SandboxedEnvironment(
         trim_blocks=True, lstrip_blocks=True, undefined=StrictUndefined
     )
@@ -89,12 +111,14 @@ def render_notification_template(
             raise NotificationTemplateException(e) from e
 
 
-def send_mail(subject, body_html, body_text, to_address):
+def send_mail(
+    subject,
+    body_text,
+    to_address,
+    from_email=settings.DEFAULT_FROM_EMAIL,
+    body_html=None,
+):
     logger.info('Sending notification email to {}: "{}"'.format(to_address, subject))
     django_send_mail(
-        subject,
-        body_text,
-        settings.DEFAULT_FROM_EMAIL,
-        [to_address],
-        html_message=body_html,
+        subject, body_text, from_email, [to_address], html_message=body_html
     )

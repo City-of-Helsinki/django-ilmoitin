@@ -22,7 +22,13 @@ send the mail:
 MAILER_EMAIL_BACKEND = "your.actual.EmailBackend"
 ```
 
-2. Create a `notifications.py` file in django app and register your notification types:
+2. Define default from address in settings
+
+```python
+DEFAULT_FROM_EMAIL = "your.email@address"
+```
+
+3. Create a `notifications.py` file in django app and register your notification types:
 
 ```python
 from django_ilmoitin.registry import notifications
@@ -30,7 +36,7 @@ from django_ilmoitin.registry import notifications
 notifications.register("event_created", "Event created")
 ```
 
-3. Create a `dummy_context.py` file in django app and add dummy context data:
+4. Create a `dummy_context.py` file in django app and add dummy context data:
 
 ```python
 from django_ilmoitin.dummy_context import dummy_context
@@ -44,7 +50,7 @@ dummy_context.context.update({
 })
 ```
 
-4. Import notifications and dummy context in your apps.py:
+5. Import notifications and dummy context in your apps.py:
 
 ```python
 from django.apps import AppConfig
@@ -61,9 +67,9 @@ class ExampleConfig(AppConfig):
         import example.dummy_context
 ```
 
-5. Go to django admin and add notification templates to your notifications
+6. Go to django admin and add notification templates to your notifications
 
-6. Send notifications:
+7. Send notifications:
 
 ```python
 from django_ilmoitin.utils import send_notification
