@@ -1,5 +1,8 @@
 from django.contrib.admin import site as admin_site
+from django.contrib.auth import get_user_model
+from django.db.models import Q
 from django.http import HttpResponse
+from django.utils.translation import ugettext_lazy as _
 from jinja2 import DebugUndefined, TemplateSyntaxError
 from jinja2.sandbox import SandboxedEnvironment
 from parler.admin import TranslatableAdmin
@@ -21,10 +24,31 @@ class NotificationTemplateForm(TranslatableModelForm):
         choices = [x for x in self.fields["_type"].choices if x[0] not in used_types]
         self.fields["_type"].choices = choices
 
+        admins_qs = (
+            get_user_model()
+            .objects.exclude(email="")
+            .filter(Q(is_superuser=True) | Q(is_staff=True))
+        )
+        self.fields["admins_to_notify"].choices = [(a.id, a.email) for a in admins_qs]
+
 
 class NotificationTemplateAdmin(TranslatableAdmin):
     form = NotificationTemplateForm
     change_form_template = "admin/preview_template.html"
+    fieldsets = [
+        (None, {"fields": ["_type", "from_email"]}),
+        (_("User notification"), {"fields": ["subject", "body_html", "body_text"]}),
+        (
+            _("Admin notification"),
+            {
+                "fields": [
+                    "admins_to_notify",
+                    "admin_notification_subject",
+                    "admin_notification_text",
+                ]
+            },
+        ),
+    ]
 
     def save_model(self, request, obj, form, change):
         if "_preview" not in request.POST:
