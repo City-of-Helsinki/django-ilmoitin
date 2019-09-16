@@ -30,7 +30,7 @@ def send_notification(
     if context is None:
         context = {}
 
-    template = NotificationTemplate.objects.filter(_type=notification_type).first()
+    template = NotificationTemplate.objects.filter(type=notification_type).first()
 
     if not template:
         logger.warning(

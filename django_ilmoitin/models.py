@@ -6,8 +6,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
 
-from .registry import notifications
-
 logger = logging.getLogger(__name__)
 
 
@@ -20,14 +18,7 @@ class NotificationTemplateException(Exception):
 
 
 class NotificationTemplate(TranslatableModel):
-    _type = models.CharField(
-        max_length=50,
-        verbose_name=_("type"),
-        unique=True,
-        db_column="type",
-        default="",
-        choices=list(notifications.registry.items()),
-    )
+    type = models.CharField(max_length=50, verbose_name=_("type"), unique=True)
 
     from_email = models.EmailField(
         verbose_name=_("From email"), max_length=100, default=get_default_from_email
@@ -72,11 +63,3 @@ class NotificationTemplate(TranslatableModel):
 
     def __str__(self):
         return str(self.type)
-
-    @property
-    def type(self):
-        return notifications.registry.get(self._type)
-
-    @type.setter
-    def type(self, value):
-        self._type = value
