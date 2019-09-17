@@ -25,7 +25,6 @@ setup(
     install_requires=[
         "Django",
         "django-parler",
-        "django-enumfields",
         "django-anymail",
         "django-mailer",
         "jinja2",
