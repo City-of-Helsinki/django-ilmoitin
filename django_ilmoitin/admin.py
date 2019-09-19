@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib.admin import site as admin_site
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -10,9 +11,12 @@ from parler.forms import TranslatableModelForm
 
 from .dummy_context import dummy_context
 from .models import NotificationTemplate
+from .registry import notifications
 
 
 class NotificationTemplateForm(TranslatableModelForm):
+    type = forms.ChoiceField(choices=notifications.registry.items())
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Do not allow the admin to choose any of the template types that already
@@ -20,9 +24,9 @@ class NotificationTemplateForm(TranslatableModelForm):
         existing_templates = NotificationTemplate.objects.all()
         if self.instance and self.instance.type:
             existing_templates = existing_templates.exclude(id=self.instance.id)
-        used_types = set(existing_templates.values_list("_type", flat=True))
-        choices = [x for x in self.fields["_type"].choices if x[0] not in used_types]
-        self.fields["_type"].choices = choices
+        used_types = set(existing_templates.values_list("type", flat=True))
+        choices = [x for x in self.fields["type"].choices if x[0] not in used_types]
+        self.fields["type"].choices = choices
 
         admins_qs = (
             get_user_model()
@@ -36,7 +40,7 @@ class NotificationTemplateAdmin(TranslatableAdmin):
     form = NotificationTemplateForm
     change_form_template = "admin/preview_template.html"
     fieldsets = [
-        (None, {"fields": ["_type", "from_email"]}),
+        (None, {"fields": ["type", "from_email"]}),
         (_("User notification"), {"fields": ["subject", "body_html", "body_text"]}),
         (
             _("Admin notification"),

@@ -39,7 +39,7 @@ def test_notification_template_rendering(notification_template):
         "body_text_var": "text_baz",
     }
 
-    template = NotificationTemplate.objects.filter(_type="event_created").first()
+    template = NotificationTemplate.objects.filter(type="event_created").first()
 
     rendered = render_notification_template(template, context, "en")
     assert len(rendered) == 3
@@ -69,7 +69,7 @@ def test_notification_template_rendering_no_body_text_provided(notification_temp
     notification_template.body_text = ""
     notification_template.save()
 
-    template = NotificationTemplate.objects.filter(_type="event_created").first()
+    template = NotificationTemplate.objects.filter(type="event_created").first()
 
     rendered = render_notification_template(template, context, "en")
     assert len(rendered) == 3
@@ -88,11 +88,11 @@ def test_notification_template_rendering_no_body_text_provided(notification_temp
 def test_undefined_rendering_context_variable(notification_template):
     context = {"extra_var": "foo", "subject_var": "bar", "body_text_var": "baz"}
 
-    template = NotificationTemplate.objects.filter(_type="event_created").first()
+    template = NotificationTemplate.objects.filter(type="event_created").first()
 
     with pytest.raises(NotificationTemplateException) as e:
         render_notification_template(template, context, "fi")
-    assert "'body_html_var' is undefined" in str(e)
+    assert "'body_html_var' is undefined" in str(e.value)
 
 
 @pytest.mark.django_db
