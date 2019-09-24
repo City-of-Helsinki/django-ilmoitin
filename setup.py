@@ -24,7 +24,7 @@ setup(
     author_email="dev@hel.fi",
     install_requires=[
         "Django",
-        "django-parler",
+        "django-parler<2.0",
         "django-anymail",
         "django-mailer",
         "jinja2",
