@@ -6,6 +6,8 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
 
+from .registry import notifications
+
 logger = logging.getLogger(__name__)
 
 
@@ -62,4 +64,7 @@ class NotificationTemplate(TranslatableModel):
         verbose_name_plural = _("notifications")
 
     def __str__(self):
-        return str(self.type)
+        if self.type in notifications.registry:
+            return notifications.registry[self.type]
+        else:
+            return "{} ({})".format(self.type, _("disabled"))
