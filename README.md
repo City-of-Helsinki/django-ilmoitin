@@ -63,12 +63,9 @@ send the mail:
     
     class ExampleConfig(AppConfig):
         name = "example"
-    
-        def __init__(self, *args, **kwargs):
-            super(ExampleConfig, self).__init__(*args, **kwargs)
-            import example.notifications
-    
+
         def ready(self):
+            import example.notifications
             import example.dummy_context
     ```
 

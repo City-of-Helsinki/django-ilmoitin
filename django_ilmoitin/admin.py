@@ -15,8 +15,6 @@ from .registry import notifications
 
 
 class NotificationTemplateForm(TranslatableModelForm):
-    type = forms.ChoiceField(choices=notifications.registry.items())
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Do not allow the admin to choose any of the template types that already
@@ -25,8 +23,8 @@ class NotificationTemplateForm(TranslatableModelForm):
         if self.instance and self.instance.type:
             existing_templates = existing_templates.exclude(id=self.instance.id)
         used_types = set(existing_templates.values_list("type", flat=True))
-        choices = [x for x in self.fields["type"].choices if x[0] not in used_types]
-        self.fields["type"].choices = choices
+        choices = [x for x in notifications.registry.items() if x[0] not in used_types]
+        self.fields["type"] = forms.ChoiceField(choices=choices)
 
         admins_qs = (
             get_user_model()
