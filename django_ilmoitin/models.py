@@ -65,6 +65,6 @@ class NotificationTemplate(TranslatableModel):
 
     def __str__(self):
         if self.type in notifications.registry:
-            return notifications.registry[self.type]
+            return str(notifications.registry[self.type])
         else:
             return "{} ({})".format(self.type, _("disabled"))
