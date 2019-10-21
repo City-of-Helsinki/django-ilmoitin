@@ -15,6 +15,7 @@ A templated Django messaging library
 
     ```python
     python manage.py migrate ilmoitin
+    ```
 
 # Usage
 
@@ -39,19 +40,28 @@ send the mail:
     from django_ilmoitin.registry import notifications
     
     notifications.register("event_created", "Event created")
+    notifications.register("event_deleted", "Event deleted")
     ```
 
-4. Create a `dummy_context.py` file in django app and add dummy context data:
+4. Create a `dummy_context.py` file in django app and add dummy context data.
+Either use the codes of notifications that you registered in the previous step, or
+use the const `COMMON_CONTEXT` to make some variables available for all templates:
 
     ```python
-    from django_ilmoitin.dummy_context import dummy_context
+    from django_ilmoitin.dummy_context import COMMON_CONTEXT, dummy_context
     
     from .models import MyModel
     
-    model = MyModel(foo="bar")
+    my_object = MyModel(foo="bar")
     
-    dummy_context.context.update({
-        "model": model
+    dummy_context.update({
+        COMMON_CONTEXT: {"my_object": my_object},
+        "event_created": {
+            "foo": "bar"
+        },
+        "event_deleted": {
+            "fizz": "buzz"
+        }
     })
     ```
 

@@ -77,7 +77,9 @@ class NotificationTemplateAdmin(TranslatableAdmin):
             trim_blocks=True, lstrip_blocks=True, undefined=DebugUndefined
         )
         try:
-            body_html = env.from_string(obj.body_html).render(dummy_context.context)
+            body_html = env.from_string(obj.body_html).render(
+                dummy_context.get(obj.type)
+            )
             return HttpResponse(body_html)
         except TemplateError as e:
             return HttpResponse(e)
