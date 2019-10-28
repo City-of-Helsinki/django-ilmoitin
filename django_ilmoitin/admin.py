@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
-from jinja2 import DebugUndefined, TemplateSyntaxError
+from jinja2 import DebugUndefined, TemplateError
 from jinja2.sandbox import SandboxedEnvironment
 from parler.admin import TranslatableAdmin
 from parler.forms import TranslatableModelForm
@@ -77,9 +77,11 @@ class NotificationTemplateAdmin(TranslatableAdmin):
             trim_blocks=True, lstrip_blocks=True, undefined=DebugUndefined
         )
         try:
-            body_html = env.from_string(obj.body_html).render(dummy_context.context)
+            body_html = env.from_string(obj.body_html).render(
+                dummy_context.get(obj.type)
+            )
             return HttpResponse(body_html)
-        except TemplateSyntaxError as e:
+        except TemplateError as e:
             return HttpResponse(e)
 
 
