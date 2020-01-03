@@ -64,7 +64,11 @@ def send_notification(
         return
 
     send_mail(
-        subject, body_text, email, from_email=template.from_email, body_html=body_html
+        subject,
+        body_text,
+        email,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        body_html=body_html,
     )
 
     if (
@@ -77,7 +81,10 @@ def send_notification(
 
         for admin in template.admins_to_notify.all():
             send_mail(
-                admin_subject, admin_text, admin.email, from_email=template.from_email
+                admin_subject,
+                admin_text,
+                admin.email,
+                from_email=settings.DEFAULT_FROM_EMAIL,
             )
 
     # also immediately fire django-mailer's commands
