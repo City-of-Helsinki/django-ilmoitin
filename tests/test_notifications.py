@@ -88,3 +88,22 @@ def test_notification_sending(notification_template):
     assert subject == "testiotsikko, muuttujan arvo: bar!"
     assert body_html == "<b>testihötömölöruumis</b>, muuttujan arvo: html_baz!"
     assert body_text == "testitekstiruumis, muuttujan arvo: text_baz!"
+
+
+@pytest.mark.parametrize("language", ["fi", "en"])
+def test_translated_from_email(notification_template, settings, language):
+    context = {
+        "extra_var": "foo",
+        "subject_var": "bar",
+        "body_html_var": "html_baz",
+        "body_text_var": "text_baz",
+    }
+    settings.ILMOITIN_TRANSLATED_FROM_EMAIL = {"fi": "Yrjö <ilmoitin@example.com>"}
+
+    send_notification("foo@bar.fi", "event_created", context, language)
+
+    assert len(mail.outbox) == 1
+    message = mail.outbox[0]
+    assert message.from_email == settings.ILMOITIN_TRANSLATED_FROM_EMAIL.get(
+        language, settings.DEFAULT_FROM_EMAIL
+    )

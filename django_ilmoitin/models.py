@@ -1,6 +1,5 @@
 import logging
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -11,20 +10,12 @@ from .registry import notifications
 logger = logging.getLogger(__name__)
 
 
-def get_default_from_email():
-    return settings.DEFAULT_FROM_EMAIL
-
-
 class NotificationTemplateException(Exception):
     pass
 
 
 class NotificationTemplate(TranslatableModel):
     type = models.CharField(max_length=50, verbose_name=_("type"), unique=True)
-
-    from_email = models.EmailField(
-        verbose_name=_("From email"), max_length=100, default=get_default_from_email
-    )
 
     admins_to_notify = models.ManyToManyField(
         get_user_model(),

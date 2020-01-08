@@ -23,7 +23,7 @@ setup(
     author="City of Helsinki",
     author_email="dev@hel.fi",
     install_requires=[
-        "Django",
+        "Django<3.0",
         "django-parler<2.0",
         "django-anymail",
         "django-mailer",

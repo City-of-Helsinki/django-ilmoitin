@@ -38,7 +38,7 @@ class NotificationTemplateAdmin(TranslatableAdmin):
     form = NotificationTemplateForm
     change_form_template = "admin/preview_template.html"
     fieldsets = [
-        (None, {"fields": ["type", "from_email"]}),
+        (None, {"fields": ["type"]}),
         (_("User notification"), {"fields": ["subject", "body_html", "body_text"]}),
         (
             _("Admin notification"),

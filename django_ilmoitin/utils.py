@@ -63,9 +63,12 @@ def send_notification(
         )
         return
 
-    send_mail(
-        subject, body_text, email, from_email=template.from_email, body_html=body_html
-    )
+    if language in getattr(settings, "ILMOITIN_TRANSLATED_FROM_EMAIL", {}):
+        from_email = settings.ILMOITIN_TRANSLATED_FROM_EMAIL[language]
+    else:
+        from_email = settings.DEFAULT_FROM_EMAIL
+
+    send_mail(subject, body_text, email, from_email=from_email, body_html=body_html)
 
     if (
         template.admins_to_notify.exists()
@@ -76,9 +79,7 @@ def send_notification(
         admin_text = template.admin_notification_text
 
         for admin in template.admins_to_notify.all():
-            send_mail(
-                admin_subject, admin_text, admin.email, from_email=template.from_email
-            )
+            send_mail(admin_subject, admin_text, admin.email, from_email=from_email)
 
     # also immediately fire django-mailer's commands
     Message.objects.retry_deferred()
