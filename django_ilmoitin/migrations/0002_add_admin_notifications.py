@@ -46,10 +46,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="notificationtemplate",
             name="from_email",
-            field=models.EmailField(
-                default=django_ilmoitin.models.get_default_from_email,
-                max_length=100,
-                verbose_name="From email",
-            ),
+            field=models.EmailField(max_length=100, verbose_name="From email"),
         ),
     ]

@@ -31,8 +31,16 @@ send the mail:
 2. Define default from address in settings
 
     ```python
-    DEFAULT_FROM_EMAIL = "your.email@address"
+    DEFAULT_FROM_EMAIL = "Ilmoitin <ilmoitin@example.com>"
     ```
+    In case you need translated from addresses, those can be defined like
+    ```python
+    ILMOITIN_TRANSLATED_FROM_EMAIL: {
+       "fi": "Yrjö <ilmoitin@example.com>",
+       "en": "George <ilmoitin@example.com>",
+    }
+    ```
+    The value from `DEFAULT_FROM_EMAIL` will be used for languages not defined in that dict.
 
 3. Create a `notifications.py` file in django app and register your notification types:
 
