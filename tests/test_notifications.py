@@ -1,6 +1,8 @@
 import pytest
 from django.conf import settings
 from django.core import mail
+from mailer.engine import send_all
+from mailer.models import Message
 
 from django_ilmoitin.models import NotificationTemplate, NotificationTemplateException
 from django_ilmoitin.utils import render_notification_template, send_notification
@@ -107,3 +109,25 @@ def test_translated_from_email(notification_template, settings, language):
     assert message.from_email == settings.ILMOITIN_TRANSLATED_FROM_EMAIL.get(
         language, settings.DEFAULT_FROM_EMAIL
     )
+
+
+def test_notification_delayed_sending(notification_template):
+    context = {
+        "extra_var": "foo",
+        "subject_var": "bar",
+        "body_html_var": "html_baz",
+        "body_text_var": "text_baz",
+    }
+    # Override settings to use django-mailer email backend
+    settings.EMAIL_BACKEND = "mailer.backend.DbBackend"
+    settings.MAILER_EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+    settings.ILMOITIN_QUEUE_NOTIFICATIONS = True
+
+    send_notification("foo@bar.fi", "event_created", context, "fi")
+    assert len(mail.outbox) == 0
+    assert Message.objects.count() == 1
+    # Now actually send emails
+    Message.objects.retry_deferred()
+    send_all()
+    assert Message.objects.count() == 0
+    assert len(mail.outbox) == 1

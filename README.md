@@ -100,6 +100,12 @@ use the const `COMMON_CONTEXT` to make some variables available for all template
     send_notification("foo@bar.com", "event_created", context)
     
     ```
+   
+8. By default, notifications will be sent immediately, if you only want to add notification to the message queue
+ and send it later, configure `ILMOITIN_QUEUE_NOTIFICATIONS`:
+    ```python
+    ILMOITIN_QUEUE_NOTIFICATIONS = True
+    ```
 
 ## Code format
 
