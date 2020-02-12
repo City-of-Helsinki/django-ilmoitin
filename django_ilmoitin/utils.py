@@ -81,9 +81,10 @@ def send_notification(
         for admin in template.admins_to_notify.all():
             send_mail(admin_subject, admin_text, admin.email, from_email=from_email)
 
-    # also immediately fire django-mailer's commands
-    Message.objects.retry_deferred()
-    send_all()
+    # Immediately fire django-mailer's commands if delayed=False
+    if not getattr(settings, "ILMOITIN_QUEUE_NOTIFICATIONS", False):
+        Message.objects.retry_deferred()
+        send_all()
 
 
 def render_notification_template(template, context, language_code=DEFAULT_LANGUAGE):
