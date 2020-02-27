@@ -1,6 +1,6 @@
 import logging
 
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFields
@@ -18,7 +18,7 @@ class NotificationTemplate(TranslatableModel):
     type = models.CharField(max_length=50, verbose_name=_("type"), unique=True)
 
     admins_to_notify = models.ManyToManyField(
-        get_user_model(),
+        settings.AUTH_USER_MODEL,
         related_name="+",
         blank=True,
         verbose_name=_("Admins to notify"),
