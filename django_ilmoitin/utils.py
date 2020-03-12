@@ -2,7 +2,7 @@ import logging
 from collections import namedtuple
 
 from django.conf import settings
-from django.core.mail import send_mail as django_send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
 from jinja2 import StrictUndefined
 from jinja2.exceptions import TemplateError
@@ -21,7 +21,7 @@ RenderedTemplate = namedtuple("RenderedTemplate", ("subject", "body_html", "body
 
 
 def send_notification(
-    email, notification_type, context=None, language=DEFAULT_LANGUAGE
+    email, notification_type, context=None, language=DEFAULT_LANGUAGE, attachments=None
 ):
     logger.debug(
         'Trying to send notification "{}" to {}.'.format(notification_type, email)
@@ -68,7 +68,14 @@ def send_notification(
     else:
         from_email = settings.DEFAULT_FROM_EMAIL
 
-    send_mail(subject, body_text, email, from_email=from_email, body_html=body_html)
+    send_mail(
+        subject,
+        body_text,
+        email,
+        from_email=from_email,
+        body_html=body_html,
+        attachments=attachments,
+    )
 
     if (
         template.admins_to_notify.exists()
@@ -119,8 +126,14 @@ def send_mail(
     to_address,
     from_email=settings.DEFAULT_FROM_EMAIL,
     body_html=None,
+    attachments=None,
 ):
     logger.info('Sending notification email to {}: "{}"'.format(to_address, subject))
-    django_send_mail(
-        subject, body_text, from_email, [to_address], html_message=body_html
+
+    msg = EmailMultiAlternatives(
+        subject, body_text, from_email, [to_address], attachments=attachments
     )
+    if body_html:
+        msg.attach_alternative(body_html, "text/html")
+
+    msg.send()
