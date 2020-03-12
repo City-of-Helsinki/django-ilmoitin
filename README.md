@@ -89,7 +89,7 @@ use the const `COMMON_CONTEXT` to make some variables available for all template
 
 6. Go to django admin and add notification templates to your notifications
 
-7. Send notifications:
+7. Send notifications. List of attachment files can be passed as last optional argument:
 
     ```python
     from django_ilmoitin.utils import send_notification
@@ -97,7 +97,9 @@ use the const `COMMON_CONTEXT` to make some variables available for all template
     context = {
         "foo": "bar",
     }
-    send_notification("foo@bar.com", "event_created", context)
+    attachment = "test.txt", "foo bar", "text/plain"
+
+    send_notification("foo@bar.com", "event_created", context, [attachment])
     
     ```
    
