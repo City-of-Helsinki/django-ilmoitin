@@ -116,3 +116,27 @@ We follow the basic config, without any modifications. Basic `black` commands:
 
 * To let `black` do its magic: `black .`
 * To see which files `black` would change: `black --check .`
+
+
+## Troubleshooting guide
+1. Cannot receive email even though it was sent successfully
+
+- Some strict spam filter might mark email as spam if its Message-ID header has suspicious domain name (e.g
+ _158431519447.10.15335486611387428798@**qa-staging-i09m9b-staging-77bd999444-p2497**_) 
+- This is because Python tries to generate messsage id base on the FQDN of the local machine before sending email
+. Fortunately most of Email Sending services (Mailgun, MailChimp, Sendgrid,..) have a way to generate a reliable
+ message-id that will likely pass spam filter, so we better let them do it.
+- If you are using `django-anymail` as the email backend, there is an easy way to remove the auto-generated Message
+ ID using `pre_send` signal
+ 
+- Example:
+  
+```python
+    from anymail.signals import pre_send
+    @receiver(pre_send)
+    def remove_message_id(sender, message, **kwargs):
+        message.extra_headers.pop("Message-ID", None)
+```
+
+
+Note that it only works if you are using `django-anymail` as your email backend
