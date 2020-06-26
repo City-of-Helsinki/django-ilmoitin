@@ -140,14 +140,26 @@ def send_mail(
     msg.send()
 
 
-def render_preview(notification_template):
+def render_preview(
+    notification_template: NotificationTemplate, lang: str = None
+) -> str:
+    """
+    Return a rendered preview of the passed template and the values from the dummy context
+
+    If no lang is passed, the current Django language.
+
+    :param notification_template: The template to preview
+    :param lang: The language for the preview
+    :return: The rendered preview as string
+    """
     env = SandboxedEnvironment(
         trim_blocks=True, lstrip_blocks=True, undefined=DebugUndefined
     )
     try:
-        body_html = env.from_string(notification_template.body_html).render(
-            dummy_context.get(notification_template.type)
-        )
+        with switch_language(notification_template, language_code=lang):
+            body_html = env.from_string(notification_template.body_html).render(
+                dummy_context.get(notification_template.type)
+            )
         return body_html
     except TemplateError as e:
-        return e
+        return str(e)
