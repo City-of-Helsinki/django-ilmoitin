@@ -102,12 +102,34 @@ use the const `COMMON_CONTEXT` to make some variables available for all template
     send_notification("foo@bar.com", "event_created", context, [attachment])
     
     ```
-   
+
 8. By default, notifications will be sent immediately, if you only want to add notification to the message queue
  and send it later, configure `ILMOITIN_QUEUE_NOTIFICATIONS`:
     ```python
     ILMOITIN_QUEUE_NOTIFICATIONS = True
     ```
+
+## Using the GraphQL API
+The package provides an optional GraphQL API that requires a working [graphene](https://graphene-python.org/) API
+to work, and it needs additional dependencies.
+
+1. To install them, run: `pip install django-ilmoitin[graphql_api]`
+
+2. Add the `Query` to the entrypoint where you build your schema:
+
+```python
+# my_app/schema.py
+import django_ilmoitin.api.schema as django_ilmoitin_schema
+
+class Query(
+    # other extended classes
+    django_ilmoitin_schema.Query,
+    graphene.ObjectType,
+):
+    pass
+
+```
+
 
 ## Code format
 

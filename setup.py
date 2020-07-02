@@ -27,14 +27,18 @@ setup(
         "django-parler<2.0",
         "django-anymail",
         "django-mailer",
-        "graphene>=2.0",
-        "graphene-django",
-        "graphql-core<3,>=2.1",
-        "graphql-relay<3,>=2",
         "jinja2",
     ],
     setup_requires=["pytest-runner"],
     tests_require=["pytest", "pytest-django"],
+    extras_require={
+        "graphql_api": [
+            "graphene>=2.0",
+            "graphene-django",
+            "graphql-core<3,>=2.1",
+            "graphql-relay<3,>=2",
+        ]
+    },
     classifiers=[
         "Environment :: Web Environment",
         "Framework :: Django",
