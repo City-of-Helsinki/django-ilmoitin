@@ -77,7 +77,10 @@ def test_notification_sending(notification_template):
         "body_html_var": "html_baz",
         "body_text_var": "text_baz",
     }
-    send_notification("foo@bar.fi", "event_created", context, "fi")
+
+    attachment = "test.txt", "foo bar", "text/plain"
+
+    send_notification("foo@bar.fi", "event_created", context, "fi", [attachment])
 
     assert len(mail.outbox) == 1
     message = mail.outbox[0]
@@ -90,6 +93,7 @@ def test_notification_sending(notification_template):
     assert subject == "testiotsikko, muuttujan arvo: bar!"
     assert body_html == "<b>testihötömölöruumis</b>, muuttujan arvo: html_baz!"
     assert body_text == "testitekstiruumis, muuttujan arvo: text_baz!"
+    assert message.attachments[0] == attachment
 
 
 @pytest.mark.parametrize("language", ["fi", "en"])

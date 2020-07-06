@@ -89,7 +89,7 @@ use the const `COMMON_CONTEXT` to make some variables available for all template
 
 6. Go to django admin and add notification templates to your notifications
 
-7. Send notifications:
+7. Send notifications. List of attachment files can be passed as last optional argument:
 
     ```python
     from django_ilmoitin.utils import send_notification
@@ -97,15 +97,39 @@ use the const `COMMON_CONTEXT` to make some variables available for all template
     context = {
         "foo": "bar",
     }
-    send_notification("foo@bar.com", "event_created", context)
+    attachment = "test.txt", "foo bar", "text/plain"
+
+    send_notification("foo@bar.com", "event_created", context, [attachment])
     
     ```
-   
+
 8. By default, notifications will be sent immediately, if you only want to add notification to the message queue
  and send it later, configure `ILMOITIN_QUEUE_NOTIFICATIONS`:
     ```python
     ILMOITIN_QUEUE_NOTIFICATIONS = True
     ```
+
+## Using the GraphQL API
+The package provides an optional GraphQL API that requires a working [graphene](https://graphene-python.org/) API
+to work, and it needs additional dependencies.
+
+1. To install them, run: `pip install django-ilmoitin[graphql_api]`
+
+2. Add the `Query` to the entrypoint where you build your schema:
+
+```python
+# my_app/schema.py
+import django_ilmoitin.api.schema as django_ilmoitin_schema
+
+class Query(
+    # other extended classes
+    django_ilmoitin_schema.Query,
+    graphene.ObjectType,
+):
+    pass
+
+```
+
 
 ## Code format
 
@@ -114,3 +138,27 @@ We follow the basic config, without any modifications. Basic `black` commands:
 
 * To let `black` do its magic: `black .`
 * To see which files `black` would change: `black --check .`
+
+
+## Troubleshooting guide
+1. Cannot receive email even though it was sent successfully
+
+- Some strict spam filter might mark email as spam if its Message-ID header has suspicious domain name (e.g
+ _158431519447.10.15335486611387428798@**qa-staging-i09m9b-staging-77bd999444-p2497**_) 
+- This is because Python tries to generate messsage id base on the FQDN of the local machine before sending email
+. Fortunately most of Email Sending services (Mailgun, MailChimp, Sendgrid,..) have a way to generate a reliable
+ message-id that will likely pass spam filter, so we better let them do it.
+- If you are using `django-anymail` as the email backend, there is an easy way to remove the auto-generated Message
+ ID using `pre_send` signal
+ 
+- Example:
+  
+```python
+    from anymail.signals import pre_send
+    @receiver(pre_send)
+    def remove_message_id(sender, message, **kwargs):
+        message.extra_headers.pop("Message-ID", None)
+```
+
+
+Note that it only works if you are using `django-anymail` as your email backend

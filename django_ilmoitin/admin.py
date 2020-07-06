@@ -4,14 +4,12 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.translation import ugettext_lazy as _
-from jinja2 import DebugUndefined, TemplateError
-from jinja2.sandbox import SandboxedEnvironment
 from parler.admin import TranslatableAdmin
 from parler.forms import TranslatableModelForm
 
-from .dummy_context import dummy_context
 from .models import NotificationTemplate
 from .registry import notifications
+from .utils import render_preview
 
 
 class NotificationTemplateForm(TranslatableModelForm):
@@ -73,16 +71,7 @@ class NotificationTemplateAdmin(TranslatableAdmin):
             )
 
     def preview(self, request, obj, **kwargs):
-        env = SandboxedEnvironment(
-            trim_blocks=True, lstrip_blocks=True, undefined=DebugUndefined
-        )
-        try:
-            body_html = env.from_string(obj.body_html).render(
-                dummy_context.get(obj.type)
-            )
-            return HttpResponse(body_html)
-        except TemplateError as e:
-            return HttpResponse(e)
+        return HttpResponse(render_preview(obj))
 
 
 admin_site.register(NotificationTemplate, NotificationTemplateAdmin)
