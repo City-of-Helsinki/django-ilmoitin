@@ -24,7 +24,6 @@ def force_settings(settings):
 def notification_template():
     notification_type = "event_created"
     notifications.register(notification_type, "Event created")
-    notifications.register("event_approved", "Event approved")
     template = NotificationTemplate.objects.language("en").create(
         type=notification_type,
         subject="test subject, variable value: {{ subject_var }}!",
