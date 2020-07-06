@@ -5,3 +5,7 @@ isort
 pytest
 pytest-django
 pytest-cov
+graphene>=2.0
+graphene-django
+graphql-core<3,>=2.1
+graphql-relay<3,>=2

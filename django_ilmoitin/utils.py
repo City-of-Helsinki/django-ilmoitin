@@ -4,13 +4,14 @@ from collections import namedtuple
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
-from jinja2 import StrictUndefined
+from jinja2 import DebugUndefined, StrictUndefined
 from jinja2.exceptions import TemplateError
 from jinja2.sandbox import SandboxedEnvironment
 from mailer.engine import send_all
 from mailer.models import Message
 from parler.utils.context import switch_language
 
+from .dummy_context import dummy_context
 from .models import NotificationTemplate, NotificationTemplateException
 
 logger = logging.getLogger(__name__)
@@ -137,3 +138,28 @@ def send_mail(
         msg.attach_alternative(body_html, "text/html")
 
     msg.send()
+
+
+def render_preview(
+    notification_template: NotificationTemplate, lang: str = None
+) -> str:
+    """
+    Return a rendered preview of the passed template and the values from the dummy context
+
+    If no lang is passed, the current Django language.
+
+    :param notification_template: The template to preview
+    :param lang: The language for the preview
+    :return: The rendered preview as string
+    """
+    env = SandboxedEnvironment(
+        trim_blocks=True, lstrip_blocks=True, undefined=DebugUndefined
+    )
+    try:
+        with switch_language(notification_template, language_code=lang):
+            body_html = env.from_string(notification_template.body_html).render(
+                dummy_context.get(notification_template.type)
+            )
+        return body_html
+    except TemplateError as e:
+        return str(e)
