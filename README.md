@@ -130,6 +130,43 @@ class Query(
 
 ```
 
+### Adding authentication to the queries
+All the queries are public by default. The way to protect them is to override the resolvers on your app and call the "parent" query on the new resolver.
+
+An example of how to protect a query would be as follows:
+```python
+class Query(
+    # other extended classes
+    django_ilmoitin_schema.Query,
+    graphene.ObjectType,
+):
+
+  @staticmethod
+  @login_required
+  def resolve_notification_templates(parent, info, **kwargs):
+      return django_ilmoitin_schema.Query.resolve_notification_templates(
+          parent, info, **kwargs
+      )
+```
+
+If you need more specific permission checking, you can also do
+```python
+class Query(
+    # other extended classes
+    django_ilmoitin_schema.Query,
+    graphene.ObjectType,
+):
+
+  @staticmethod
+  def resolve_notification_templates(parent, info, **kwargs):
+      user = info.context.user
+      if user.has_perms(["very_specific_permission"]):
+          return django_ilmoitin_schema.Query.resolve_notification_templates(
+              parent, info, **kwargs
+          )
+      raise PermissionError("User not authorised")
+```
+
 
 ## Code format
 
