@@ -8,7 +8,8 @@ from django_ilmoitin.models import NotificationTemplate
 from django_ilmoitin.utils import render_preview
 
 LanguageEnum = graphene.Enum(
-    "Language", [(lang[0].upper(), lang[0]) for lang in settings.LANGUAGES]
+    "NotificationTemplateLanguage",
+    [(lang[0].upper(), lang[0]) for lang in settings.LANGUAGES],
 )
 
 
