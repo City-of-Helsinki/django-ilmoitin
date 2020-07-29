@@ -17,6 +17,12 @@ A templated Django messaging library
     python manage.py migrate ilmoitin
     ```
 
+Use version >=0.6.x for a project based on Django 3.x
+
+Use version 0.5.x for a project based on Django 2.x.
+
+If you need to make changes to `django-ilmoitin` and your project uses Django 2.x, add your changes to the branch [stable/0.5.x](https://github.com/City-of-Helsinki/django-ilmoitin/tree/stable/0.5.x) and then make a new 0.5.x release from it.
+
 # Usage
 
 1. `django-ilmoitin` uses [`django-mailer`](https://github.com/pinax/django-mailer)
