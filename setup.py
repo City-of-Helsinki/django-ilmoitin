@@ -2,8 +2,6 @@ import os
 
 from setuptools import find_packages, setup
 
-from django_ilmoitin import __version__
-
 with open(os.path.join(os.path.dirname(__file__), "README.md")) as readme:
     README = readme.read()
 
@@ -12,7 +10,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name="django_ilmoitin",
-    version=__version__,
+    version="0.6.0",
     packages=find_packages(exclude=["tests", "tests.*"]),
     include_package_data=True,
     license="MIT License",
@@ -23,7 +21,8 @@ setup(
     author="City of Helsinki",
     author_email="dev@hel.fi",
     install_requires=[
-        "Django>=3,<4",
+        'importlib-metadata >= 1.0 ; python_version < "3.8"',
+        "Django>=3.0",
         "django-parler>=2.0",
         "django-anymail",
         "django-mailer",

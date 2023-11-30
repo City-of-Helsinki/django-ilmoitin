@@ -1,3 +1,9 @@
-default_app_config = "django_ilmoitin.apps.DjangoIlmoitinConfig"
+import sys
 
-__version__ = "0.6.0"
+if sys.version_info >= (3, 8):
+    from importlib import metadata
+else:
+    import importlib_metadata as metadata
+
+
+__version__ = metadata.version("django_ilmoitin")
