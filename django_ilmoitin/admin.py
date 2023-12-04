@@ -3,7 +3,7 @@ from django.contrib.admin import site as admin_site
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.http import HttpResponse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from parler.admin import TranslatableAdmin
 from parler.forms import TranslatableModelForm
 
