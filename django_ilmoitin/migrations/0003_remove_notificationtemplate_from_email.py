@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("django_ilmoitin", "0002_add_admin_notifications")]
 
     operations = [

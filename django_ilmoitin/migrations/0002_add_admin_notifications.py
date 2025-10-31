@@ -2,11 +2,9 @@
 
 from django.conf import settings
 from django.db import migrations, models
-import django_ilmoitin.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("django_ilmoitin", "0001_initial"),
@@ -37,7 +35,8 @@ class Migration(migrations.Migration):
             name="admins_to_notify",
             field=models.ManyToManyField(
                 blank=True,
-                help_text="Choose admin users you want to be notified when this event happens.",
+                help_text="Choose admin users you want to be notified when this event "
+                "happens.",
                 related_name="_notificationtemplate_admins_to_notify_+",
                 to=settings.AUTH_USER_MODEL,
                 verbose_name="Admins to notify",

@@ -52,23 +52,19 @@ class NotificationTemplateAdmin(TranslatableAdmin):
 
     def save_model(self, request, obj, form, change):
         if "_preview" not in request.POST:
-            super(NotificationTemplateAdmin, self).save_model(
-                request, obj, form, change
-            )
+            super().save_model(request, obj, form, change)
 
     def response_change(self, request, obj):
         if "_preview" in request.POST:
             return self.preview(request, obj)
         else:
-            return super(NotificationTemplateAdmin, self).response_change(request, obj)
+            return super().response_change(request, obj)
 
     def response_add(self, request, obj, post_url_continue=None):
         if "_preview" in request.POST:
             return self.preview(request, obj)
         else:
-            return super(NotificationTemplateAdmin, self).response_add(
-                request, obj, post_url_continue=None
-            )
+            return super().response_add(request, obj, post_url_continue=None)
 
     def preview(self, request, obj, **kwargs):
         return HttpResponse(render_preview(obj))

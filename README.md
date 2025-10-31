@@ -53,7 +53,7 @@ send the mail:
 
     ```python
     from django_ilmoitin.registry import notifications
-    
+
     notifications.register("event_created", "Event created")
     notifications.register("event_deleted", "Event deleted")
     ```
@@ -64,11 +64,11 @@ use the const `COMMON_CONTEXT` to make some variables available for all template
 
     ```python
     from django_ilmoitin.dummy_context import COMMON_CONTEXT, dummy_context
-    
+
     from .models import MyModel
-    
+
     my_object = MyModel(foo="bar")
-    
+
     dummy_context.update({
         COMMON_CONTEXT: {"my_object": my_object},
         "event_created": {
@@ -84,8 +84,8 @@ use the const `COMMON_CONTEXT` to make some variables available for all template
 
     ```python
     from django.apps import AppConfig
-    
-    
+
+
     class ExampleConfig(AppConfig):
         name = "example"
 
@@ -100,14 +100,14 @@ use the const `COMMON_CONTEXT` to make some variables available for all template
 
     ```python
     from django_ilmoitin.utils import send_notification
-    
+
     context = {
         "foo": "bar",
     }
     attachment = "test.txt", "foo bar", "text/plain"
 
     send_notification("foo@bar.com", "event_created", context, [attachment])
-    
+
     ```
 
 8. By default, notifications will be sent immediately, if you only want to add notification to the message queue
@@ -188,15 +188,15 @@ We follow the basic config, without any modifications. Basic `black` commands:
 1. Cannot receive email even though it was sent successfully
 
 - Some strict spam filter might mark email as spam if its Message-ID header has suspicious domain name (e.g
- _158431519447.10.15335486611387428798@**qa-staging-i09m9b-staging-77bd999444-p2497**_) 
+ _158431519447.10.15335486611387428798@**qa-staging-i09m9b-staging-77bd999444-p2497**_)
 - This is because Python tries to generate messsage id base on the FQDN of the local machine before sending email
 . Fortunately most of Email Sending services (Mailgun, MailChimp, Sendgrid,..) have a way to generate a reliable
  message-id that will likely pass spam filter, so we better let them do it.
 - If you are using `django-anymail` as the email backend, there is an easy way to remove the auto-generated Message
  ID using `pre_send` signal
- 
+
 - Example:
-  
+
 ```python
     from anymail.signals import pre_send
     @receiver(pre_send)

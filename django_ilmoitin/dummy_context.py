@@ -1,11 +1,12 @@
 from collections import defaultdict
+from collections.abc import Mapping
 from copy import deepcopy
 from enum import Enum
-from typing import Any, Mapping, Type, Union
+from typing import Any, Union
 
 from .registry import notifications
 
-_StrOrEnum = Union[str, Type[Enum]]
+_StrOrEnum = Union[str, type[Enum]]
 
 COMMON_CONTEXT = "__common__"
 
@@ -20,9 +21,9 @@ class DummyContext:
 
         :param context_dict: dictionary of values to be put into dummy context
         """
-        assert isinstance(
-            context_dict, Mapping
-        ), "DummyContext's update() method accepts only dictionaries."
+        assert isinstance(context_dict, Mapping), (
+            "DummyContext's update() method accepts only dictionaries."
+        )
 
         for type_code, context in context_dict.items():
             if isinstance(type_code, Enum):
@@ -62,8 +63,9 @@ class DummyContext:
     @staticmethod
     def _assert_notification_type_exists(type_code: str) -> None:
         assert type_code in notifications.registry, (
-            "This type of notification is not"
-            "registered with the ilmoitin: {}".format(type_code)
+            "This type of notification is notregistered with the ilmoitin: {}".format(
+                type_code
+            )
         )
 
 
