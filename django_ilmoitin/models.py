@@ -10,7 +10,7 @@ from .registry import notifications
 logger = logging.getLogger(__name__)
 
 
-class NotificationTemplateException(Exception):
+class NotificationTemplateException(Exception):  # noqa E501
     pass
 
 

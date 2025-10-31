@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
@@ -62,7 +61,8 @@ class Migration(migrations.Migration):
                     "body_text",
                     models.TextField(
                         blank=True,
-                        help_text="If left blank, the HTML version without HTML tags will be used.",
+                        help_text="If left blank, the HTML version without HTML tags "
+                        "will be used.",
                         verbose_name="body, plain text version",
                     ),
                 ),

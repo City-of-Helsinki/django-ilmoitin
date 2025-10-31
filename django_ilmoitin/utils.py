@@ -24,9 +24,7 @@ RenderedTemplate = namedtuple("RenderedTemplate", ("subject", "body_html", "body
 def send_notification(
     email, notification_type, context=None, language=DEFAULT_LANGUAGE, attachments=None
 ):
-    logger.debug(
-        'Trying to send notification "{}" to {}.'.format(notification_type, email)
-    )
+    logger.debug(f'Trying to send notification "{notification_type}" to {email}.')
 
     if context is None:
         context = {}
@@ -35,9 +33,8 @@ def send_notification(
 
     if not template:
         logger.warning(
-            'No notification template created for "{}" event, not sending anything.'.format(
-                notification_type
-            )
+            'No notification template created for "{}" event, not sending '
+            "anything.".format(notification_type)
         )
         return
 
@@ -58,9 +55,8 @@ def send_notification(
 
     if not subject:
         logger.warning(
-            'Rendered notification "{}" has an empty subject, not sending anything.'.format(
-                notification_type
-            )
+            'Rendered notification "{}" has an empty subject, not sending '
+            "anything.".format(notification_type)
         )
         return
 
@@ -99,7 +95,8 @@ def render_notification_template(template, context, language_code=DEFAULT_LANGUA
     """
     Render a notification template with given context in given language
 
-    Returns a namedtuple containing all content fields (subject, body_html, body_text) of the template.
+    Returns a namedtuple containing all content fields (subject, body_html, body_text)
+    of the template.
     """
     env = SandboxedEnvironment(
         trim_blocks=True, lstrip_blocks=True, undefined=StrictUndefined
@@ -129,7 +126,7 @@ def send_mail(
     body_html=None,
     attachments=None,
 ):
-    logger.info('Sending notification email to {}: "{}"'.format(to_address, subject))
+    logger.info(f'Sending notification email to {to_address}: "{subject}"')
 
     msg = EmailMultiAlternatives(
         subject, body_text, from_email, [to_address], attachments=attachments
@@ -144,7 +141,8 @@ def render_preview(
     notification_template: NotificationTemplate, lang: str = None
 ) -> str:
     """
-    Return a rendered preview of the passed template and the values from the dummy context
+    Return a rendered preview of the passed template and the values from the dummy
+    context
 
     If no lang is passed, the current Django language.
 

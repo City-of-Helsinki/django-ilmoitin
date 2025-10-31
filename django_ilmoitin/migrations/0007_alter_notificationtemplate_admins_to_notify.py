@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("django_ilmoitin", "0006_alter_notificationtemplatetranslation_id"),
@@ -17,7 +16,8 @@ class Migration(migrations.Migration):
             name="admins_to_notify",
             field=models.ManyToManyField(
                 blank=True,
-                help_text="Choose admin users you want to be notified when this event happens.",
+                help_text="Choose admin users you want to be notified when this "
+                "event happens.",
                 related_name="+",
                 to=settings.AUTH_USER_MODEL,
                 verbose_name="Admins to notify",
