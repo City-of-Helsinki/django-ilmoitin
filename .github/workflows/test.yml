@@ -14,7 +14,7 @@ jobs:
       TOX_POSARGS: -- --cov=. --cov-report=xml
     strategy:
       matrix:
-        python_version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python_version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     steps:
     - uses: actions/checkout@v3
@@ -36,5 +36,5 @@ jobs:
       run: tox run -f py$(echo ${{ matrix.python_version }} | tr -d .) ${{ env.TOX_POSARGS }}
 
     - name: Upload Coverage to Codecov
-      if: ${{ matrix.python_version == '3.9' }}
+      if: ${{ matrix.python_version == '3.10' }}
       uses: codecov/codecov-action@v3
