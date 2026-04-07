@@ -45,16 +45,43 @@ graphql_api = [
     "graphql-core<3,>=2.1",
     "graphql-relay<3,>=2",
 ]
+test = [
+    "pytest",
+    "pytest-django",
+    "pytest-cov",
+]
+all = ["django-ilmoitin[test,graphql_api]"]
 
 [project.urls]
 Homepage = "https://github.com/City-of-Helsinki/django-ilmoitin"
 
-[tool.hatch.build.targets.wheel]
-packages = ["django_ilmoitin"]
-
 [tool.coverage.run]
 source = ["django_ilmoitin"]
 omit = ["**/migrations/*", "**/tests/*"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["django_ilmoitin"]
+
+[tool.hatch.envs.default]
+dependencies = [
+    "django~=5.2",
+    "pre-commit",
+]
+features = ["all"]
+python = "3.10"
+
+[tool.hatch.envs.default.scripts]
+test = "pytest {args}"
+lint = [
+    "pre-commit install",
+    "pre-commit run -a",
+]
+manage = "tests/manage.py {args}"
+
+[tool.hatch.envs.hatch-uv]
+dependencies = [
+    "uv>=0.11.1",
+]
 
 [tool.pytest.ini_options]
 testpaths = [
@@ -96,3 +123,6 @@ select = [
     # flake8-print
     "T20",
 ]
+
+[tool.uv]
+exclude-newer = "14 days"
