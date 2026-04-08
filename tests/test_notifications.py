@@ -1,5 +1,4 @@
 import pytest
-from django.conf import settings
 from django.core import mail
 from mailer.engine import send_all
 from mailer.models import Message
@@ -8,6 +7,7 @@ from django_ilmoitin.models import NotificationTemplate, NotificationTemplateExc
 from django_ilmoitin.utils import render_notification_template, send_notification
 
 
+@pytest.mark.django_db
 def test_notification_template_rendering(notification_template):
     context = {
         "extra_var": "foo",
@@ -31,6 +31,7 @@ def test_notification_template_rendering(notification_template):
     assert rendered.body_text == "testitekstiruumis, muuttujan arvo: text_baz!"
 
 
+@pytest.mark.django_db
 def test_notification_template_rendering_no_body_text_provided(notification_template):
     context = {
         "extra_var": "foo",
@@ -60,6 +61,7 @@ def test_notification_template_rendering_no_body_text_provided(notification_temp
     assert rendered.body_text == "testihötömölöruumis, muuttujan arvo: html_baz!"
 
 
+@pytest.mark.django_db
 def test_undefined_rendering_context_variable(notification_template):
     context = {"extra_var": "foo", "subject_var": "bar", "body_text_var": "baz"}
 
@@ -70,7 +72,8 @@ def test_undefined_rendering_context_variable(notification_template):
     assert "'body_html_var' is undefined" in str(e.value)
 
 
-def test_notification_sending(notification_template):
+@pytest.mark.django_db
+def test_notification_sending(notification_template, settings):
     context = {
         "extra_var": "foo",
         "subject_var": "bar",
@@ -97,6 +100,7 @@ def test_notification_sending(notification_template):
 
 
 @pytest.mark.parametrize("language", ["fi", "en"])
+@pytest.mark.django_db
 def test_translated_from_email(notification_template, settings, language):
     context = {
         "extra_var": "foo",
@@ -115,7 +119,8 @@ def test_translated_from_email(notification_template, settings, language):
     )
 
 
-def test_notification_delayed_sending(notification_template):
+@pytest.mark.django_db
+def test_notification_delayed_sending(notification_template, settings):
     context = {
         "extra_var": "foo",
         "subject_var": "bar",

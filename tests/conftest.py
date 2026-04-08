@@ -10,14 +10,9 @@ from django_ilmoitin.registry import notifications
 
 
 @pytest.fixture(autouse=True)
-def autouse_django_db(db):
-    pass
-
-
-@pytest.fixture(autouse=True)
-def force_settings(settings):
-    settings.LANGUAGES = (("fi", "Finnish"), ("en", "English"))
-    settings.LANGUAGE_CODE = "en"
+def clear_notification_registry():
+    yield
+    notifications.registry = {}
 
 
 @pytest.fixture

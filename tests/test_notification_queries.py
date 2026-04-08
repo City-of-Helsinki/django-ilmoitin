@@ -6,6 +6,7 @@ from django_ilmoitin.api.schema.types import LanguageEnum
 from django_ilmoitin.utils import render_preview
 
 
+@pytest.mark.django_db
 def test_query_notification_templates(graphql_client, notification_template):
     query = """
     {

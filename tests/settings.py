@@ -42,3 +42,8 @@ DEBUG = True
 USE_TZ = True
 SECRET_KEY = "sekret"
 LANGUAGES = (("fi", "Finnish"), ("en", "English"), ("sv", "Swedish"))
+LANGUAGE_CODE = "en"
+
+# This one is very important, otherwise you get flaky tests because the cache
+# leaks between tests.
+PARLER_ENABLE_CACHING = False
