@@ -15,9 +15,8 @@ requires-python = ">=3.10"
 classifiers = [
     "Environment :: Web Environment",
     "Framework :: Django",
-    "Framework :: Django :: 4.2",
-    "Framework :: Django :: 5.1",
     "Framework :: Django :: 5.2",
+    "Framework :: Django :: 6.0",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
@@ -31,7 +30,7 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
 dependencies = [
-    "Django>=4.2",
+    "Django>=5.2",
     "django-parler>=2.0",
     "django-anymail",
     "django-mailer",
@@ -85,16 +84,12 @@ parallel = false
 randomize = true
 
 [[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.10", "3.11", "3.12"]
-django = ["4.2", "5.1", "5.2"]
-
-[[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.13"]
-django = ["5.1", "5.2"]
-
-[[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.14"]
+python = ["3.10", "3.11"]
 django = ["5.2"]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.12", "3.13", "3.14"]
+django = ["5.2", "6.0"]
 
 [tool.hatch.envs.hatch-test.overrides]
 matrix.django.dependencies = [
