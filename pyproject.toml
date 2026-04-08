@@ -78,6 +78,35 @@ lint = [
 ]
 manage = "tests/manage.py {args}"
 
+[tool.hatch.envs.hatch-test]
+features = ["all"]
+matrix-name-format = "dj{value}"
+parallel = false
+randomize = true
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.10", "3.11", "3.12"]
+django = ["4.2", "5.1", "5.2"]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.13"]
+django = ["5.1", "5.2"]
+
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.14"]
+django = ["5.2"]
+
+[tool.hatch.envs.hatch-test.overrides]
+matrix.django.dependencies = [
+    { value = "django~={matrix:django}" },
+]
+
+[tool.hatch.envs.hatch-test.scripts]
+run = "pytest{env:HATCH_TEST_ARGS:} {args}"
+run-cov = "coverage run -m pytest{env:HATCH_TEST_ARGS:} {args}"
+cov-combine = "coverage combine"
+cov-report = "coverage report"
+
 [tool.hatch.envs.hatch-uv]
 dependencies = [
     "uv>=0.11.1",
