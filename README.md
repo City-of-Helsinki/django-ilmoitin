@@ -175,15 +175,6 @@ class Query(
 ```
 
 
-## Code format
-
-This project uses [`black`](https://github.com/ambv/black) for Python code formatting.
-We follow the basic config, without any modifications. Basic `black` commands:
-
-* To let `black` do its magic: `black .`
-* To see which files `black` would change: `black --check .`
-
-
 ## Troubleshooting guide
 1. Cannot receive email even though it was sent successfully
 
@@ -206,3 +197,32 @@ We follow the basic config, without any modifications. Basic `black` commands:
 
 
 Note that it only works if you are using `django-anymail` as your email backend
+
+
+## For developers
+
+### Prerequisites
+
+- [Hatch](https://hatch.pypa.io/latest/install/)
+
+### Testing
+
+Run the tests with:
+
+```
+hatch test
+```
+
+Test all environments in the matrix with:
+
+```
+hatch test -a
+```
+
+### Available Hatch scripts
+
+| Command | Description | Example |
+| --- | --- | --- |
+| `hatch run test <args>` | Run pytest directly | `hatch run test -k login` |
+| `hatch run lint` | Install and run pre-commit hooks | `hatch run lint` |
+| `hatch run manage <args>` | Run Django management commands | `hatch run manage migrate` |
