@@ -46,13 +46,6 @@ def send_notification(
         subject, body_html, body_text = render_notification_template(
             template, context, language
         )
-    except NotificationTemplate.DoesNotExist:
-        logger.debug(
-            'NotificationTemplate "{}" does not exist, not sending anything.'.format(
-                notification_type
-            )
-        )
-        return
     except NotificationTemplateException as e:
         logger.exception(e)
         return
