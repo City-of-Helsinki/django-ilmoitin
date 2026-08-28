@@ -22,7 +22,11 @@ RenderedTemplate = namedtuple("RenderedTemplate", ("subject", "body_html", "body
 
 
 def send_notification(
-    email, notification_type, context=None, language=DEFAULT_LANGUAGE, attachments=None
+    email: str,
+    notification_type: str,
+    context: dict | None = None,
+    language: str = DEFAULT_LANGUAGE,
+    attachments: list | None = None,
 ):
     logger.debug(f'Trying to send notification "{notification_type}" to {email}.')
 
