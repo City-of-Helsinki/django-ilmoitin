@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import User
 from django.core import mail
 from mailer.engine import send_all
 from mailer.models import Message
@@ -7,8 +8,9 @@ from django_ilmoitin.models import NotificationTemplate, NotificationTemplateExc
 from django_ilmoitin.utils import render_notification_template, send_notification
 
 
+@pytest.mark.usefixtures("notification_template")
 @pytest.mark.django_db
-def test_notification_template_rendering(notification_template):
+def test_notification_template_rendering():
     context = {
         "extra_var": "foo",
         "subject_var": "bar",
@@ -61,8 +63,9 @@ def test_notification_template_rendering_no_body_text_provided(notification_temp
     assert rendered.body_text == "testihötömölöruumis, muuttujan arvo: html_baz!"
 
 
+@pytest.mark.usefixtures("notification_template")
 @pytest.mark.django_db
-def test_undefined_rendering_context_variable(notification_template):
+def test_undefined_rendering_context_variable():
     context = {"extra_var": "foo", "subject_var": "bar", "body_text_var": "baz"}
 
     template = NotificationTemplate.objects.filter(type="event_created").first()
@@ -72,8 +75,9 @@ def test_undefined_rendering_context_variable(notification_template):
     assert "'body_html_var' is undefined" in str(e.value)
 
 
+@pytest.mark.usefixtures("notification_template")
 @pytest.mark.django_db
-def test_notification_sending(notification_template, settings):
+def test_notification_sending(settings):
     context = {
         "extra_var": "foo",
         "subject_var": "bar",
@@ -99,9 +103,10 @@ def test_notification_sending(notification_template, settings):
     assert message.attachments[0] == attachment
 
 
+@pytest.mark.usefixtures("notification_template")
 @pytest.mark.parametrize("language", ["fi", "en"])
 @pytest.mark.django_db
-def test_translated_from_email(notification_template, settings, language):
+def test_translated_from_email(settings, language):
     context = {
         "extra_var": "foo",
         "subject_var": "bar",
@@ -119,8 +124,9 @@ def test_translated_from_email(notification_template, settings, language):
     )
 
 
+@pytest.mark.usefixtures("notification_template")
 @pytest.mark.django_db
-def test_notification_delayed_sending(notification_template, settings):
+def test_notification_delayed_sending(settings):
     context = {
         "extra_var": "foo",
         "subject_var": "bar",
@@ -140,3 +146,82 @@ def test_notification_delayed_sending(notification_template, settings):
     send_all()
     assert Message.objects.count() == 0
     assert len(mail.outbox) == 1
+
+
+@pytest.mark.django_db
+def test_send_notification_does_not_send_if_no_template(caplog):
+    send_notification("john.doe@test.test", "nonexistent")
+
+    assert len(mail.outbox) == 0
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "WARNING"
+    assert (
+        'No notification template created for "nonexistent"'
+        in caplog.records[0].message
+    )
+
+
+@pytest.mark.usefixtures("notification_template")
+@pytest.mark.django_db
+def test_send_notification_does_not_send_on_render_error(monkeypatch, caplog):
+    def mock_render_notification_template(*_, **__):
+        raise NotificationTemplateException("bonjour")
+
+    monkeypatch.setattr(
+        "django_ilmoitin.utils.render_notification_template",
+        mock_render_notification_template,
+    )
+
+    send_notification("john.doe@test.test", "event_created")
+
+    assert len(mail.outbox) == 0
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "ERROR"
+    assert caplog.records[0].message == "bonjour"
+
+
+@pytest.mark.usefixtures("notification_template")
+@pytest.mark.django_db
+def test_send_notification_does_not_if_subject_is_missing(monkeypatch, caplog):
+    def mock_render_notification_template(*_, **__):
+        return "", "body_html", "body_text"
+
+    monkeypatch.setattr(
+        "django_ilmoitin.utils.render_notification_template",
+        mock_render_notification_template,
+    )
+
+    send_notification("john.doe@test.test", "event_created")
+
+    assert len(mail.outbox) == 0
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "WARNING"
+    assert "empty subject" in caplog.records[0].message
+
+
+@pytest.mark.django_db
+def test_send_notification_notify_admins(notification_template):
+    context = {
+        "extra_var": "foo",
+        "subject_var": "bar",
+        "body_html_var": "html_baz",
+        "body_text_var": "text_baz",
+    }
+    admin_user_1 = User.objects.create_user("admin1", email="admin1@test.test")
+    admin_user_2 = User.objects.create_user("admin2", email="admin2@test.test")
+
+    notification_template.admin_notification_subject = "admin_subject"
+    notification_template.admin_notification_text = "admin_text"
+    notification_template.admins_to_notify.add(admin_user_1, admin_user_2)
+    notification_template.save()
+    send_notification("john.doe@test.test", "event_created", context, "fi")
+
+    # Should have sent notification + two admin notifications in outbox
+    assert len(mail.outbox) == 3
+    sent_notification = mail.outbox[0]
+    assert "testiotsikko" in sent_notification.subject
+    for i, sent_admin_notification in enumerate(mail.outbox[1:]):
+        assert sent_admin_notification.subject == "admin_subject"
+        assert sent_admin_notification.body == "admin_text"
+        assert len(sent_admin_notification.to) == 1
+        assert sent_admin_notification.to[0] == f"admin{i + 1}@test.test"
