@@ -30,7 +30,7 @@ class DummyContext:
                 type_code = type_code.value
 
             self._assert_type_code_is_str(type_code)
-            if not type_code == COMMON_CONTEXT:
+            if type_code != COMMON_CONTEXT:
                 self._assert_notification_type_exists(type_code)
 
             self.context.update({type_code: context})
