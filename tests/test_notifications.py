@@ -5,7 +5,11 @@ from mailer.engine import send_all
 from mailer.models import Message
 
 from django_ilmoitin.models import NotificationTemplate, NotificationTemplateException
-from django_ilmoitin.utils import render_notification_template, send_notification
+from django_ilmoitin.utils import (
+    render_notification_template,
+    render_preview,
+    send_notification,
+)
 
 
 @pytest.mark.usefixtures("notification_template")
@@ -31,6 +35,39 @@ def test_notification_template_rendering():
     assert rendered.subject == "testiotsikko, muuttujan arvo: bar!"
     assert rendered.body_html == "<b>testihötömölöruumis</b>, muuttujan arvo: html_baz!"
     assert rendered.body_text == "testitekstiruumis, muuttujan arvo: text_baz!"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("language", "expected"),
+    [
+        ("en", "<b>test body HTML</b>, variable value: body_html_var!"),
+        ("fi", "<b>testihötömölöruumis</b>, muuttujan arvo: body_html_var!"),
+    ],
+)
+def test_render_preview_uses_dummy_context(notification_template, language, expected):
+    assert render_preview(notification_template, language) == expected
+
+
+@pytest.mark.django_db
+def test_render_preview_uses_current_language(notification_template):
+    notification_template.set_current_language("fi")
+
+    assert (
+        render_preview(notification_template)
+        == "<b>testihötömölöruumis</b>, muuttujan arvo: body_html_var!"
+    )
+
+
+@pytest.mark.django_db
+def test_render_preview_returns_template_error(notification_template):
+    notification_template.set_current_language("en")
+    notification_template.body_html = "{% if %}"
+    notification_template.save()
+
+    preview = render_preview(notification_template, "en")
+
+    assert "Expected an expression" in preview
 
 
 @pytest.mark.django_db
