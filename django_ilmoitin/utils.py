@@ -50,7 +50,7 @@ def send_notification(
         )
         return
     except NotificationTemplateException as e:
-        logger.error(e, exc_info=True)
+        logger.exception(e)
         return
 
     if not subject:
