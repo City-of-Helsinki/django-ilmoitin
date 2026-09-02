@@ -255,10 +255,18 @@ def test_send_notification_notify_admins(notification_template):
 
     # Should have sent notification + two admin notifications in outbox
     assert len(mail.outbox) == 3
+
     sent_notification = mail.outbox[0]
     assert "testiotsikko" in sent_notification.subject
-    for i, sent_admin_notification in enumerate(mail.outbox[1:]):
-        assert sent_admin_notification.subject == "admin_subject"
-        assert sent_admin_notification.body == "admin_text"
-        assert len(sent_admin_notification.to) == 1
-        assert sent_admin_notification.to[0] == f"admin{i + 1}@test.test"
+
+    sent_admin_notification = mail.outbox[1]
+    assert sent_admin_notification.subject == "admin_subject"
+    assert sent_admin_notification.body == "admin_text"
+    assert len(sent_admin_notification.to) == 1
+    assert sent_admin_notification.to[0] == "admin1@test.test"
+
+    sent_admin_notification = mail.outbox[2]
+    assert sent_admin_notification.subject == "admin_subject"
+    assert sent_admin_notification.body == "admin_text"
+    assert len(sent_admin_notification.to) == 1
+    assert sent_admin_notification.to[0] == "admin2@test.test"
