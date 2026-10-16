@@ -16,9 +16,9 @@ A templated Django messaging library
     ```python
     python manage.py migrate ilmoitin
     ```
-Use version 0.7.0 for a project based on Django >= 4.2 and Python >= 3.10
+## Compatibility
 
-For older Python versions, use version 0.6.0.
+Requires Python 3.11 or newer and supports Django >= 5.2.
 
 Use version 0.5.x for a project based on Django 2.x.
 
