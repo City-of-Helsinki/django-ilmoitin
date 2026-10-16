@@ -18,7 +18,7 @@ A templated Django messaging library
     ```
 ## Compatibility
 
-Requires Python 3.11 or newer and supports Django >= 5.2.
+Requires Python 3.11 or newer and supports Django 5.2 and 6.0.
 
 Use version 0.5.x for a project based on Django 2.x.
 
